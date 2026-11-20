@@ -1,0 +1,680 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Sakura Chase">
+<meta name="theme-color" content="#f3f5f8">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Crect%20width%3D%2224%22%20height%3D%2224%22%20rx%3D%225%22%20fill%3D%22%23fbe3ea%22/%3E%3Cg%20fill%3D%22%23d9466f%22%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%2872%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28144%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28216%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28288%2012%2012%29%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%222.2%22%20fill%3D%22%23fff%22/%3E%3C/svg%3E">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Sakura Chase</title>
+</head>
+<body>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap">
+<style>
+/* Layout: one-column phone app, sticky top bar, fixed bottom tab bar; views swap on the hash. */
+:root {
+  --paper: #f3f5f8; --card: #ffffff; --ink: #18202e; --muted: #5d6679; --line: #dce1e9;
+  --sakura: #d9466f; --sakura-soft: #fbe3ea; --celadon: #3f8f7f; --celadon-soft: #dcefe9; --seal: #c3352b;
+  --c-seoul: #3f8f7f; --c-gyeongju: #a77a1f; --c-busan: #2c6db8; --c-hirosaki: #d9466f; --c-tokyo: #5b52c4;
+  --shadow: 0 1px 2px rgba(24,32,46,.06), 0 6px 18px rgba(24,32,46,.06);
+  --f-display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --f-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --f-cjk: "Apple SD Gothic Neo", "Hiragino Sans", "Noto Sans KR", "Noto Sans JP", "Malgun Gothic", "Yu Gothic", sans-serif;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --paper: #11151d; --card: #1a202b; --ink: #edf0f6; --muted: #9ba4b7; --line: #2a3140;
+  --sakura: #f27a9b; --sakura-soft: #3a1f29; --celadon: #74c3b0; --celadon-soft: #1b3330; --seal: #ec5d50;
+  --c-seoul: #74c3b0; --c-gyeongju: #d7a948; --c-busan: #6aa6ec; --c-hirosaki: #f27a9b; --c-tokyo: #9a92f0;
+  --shadow: 0 1px 2px rgba(0,0,0,.3); color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --paper: #11151d; --card: #1a202b; --ink: #edf0f6; --muted: #9ba4b7; --line: #2a3140;
+  --sakura: #f27a9b; --sakura-soft: #3a1f29; --celadon: #74c3b0; --celadon-soft: #1b3330; --seal: #ec5d50;
+  --c-seoul: #74c3b0; --c-gyeongju: #d7a948; --c-busan: #6aa6ec; --c-hirosaki: #f27a9b; --c-tokyo: #9a92f0;
+  --shadow: 0 1px 2px rgba(0,0,0,.3); color-scheme: dark; }
+
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font: 15px/1.5 var(--f-body); -webkit-tap-highlight-color: transparent; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+.wrap { max-width: 560px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 8px calc(96px + env(safe-area-inset-bottom, 0px)); }
+h1, h2, h3 { font-family: var(--f-display); margin: 0; text-wrap: balance; letter-spacing: -0.01em; }
+h1 { font-size: 2.1rem; line-height: 1.05; font-weight: 800; }
+h2 { font-size: 1.3rem; font-weight: 700; }
+h3 { font-size: 1.02rem; font-weight: 700; }
+p { margin: 0; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--sakura); outline-offset: 2px; }
+.muted { color: var(--muted); }
+.small { font-size: .82rem; }
+.eyebrow { font-size: .72rem; font-weight: 600; letter-spacing: .09em; text-transform: uppercase; color: var(--muted); }
+.stack { display: flex; flex-direction: column; gap: 14px; }
+.row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.card { background: var(--card); border: 1px solid var(--line); border-radius: 18px; padding: 16px; box-shadow: var(--shadow); min-width: 0; }
+.tnum { font-variant-numeric: tabular-nums; }
+
+/* top bar */
+.top { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--paper); }
+.top .wrap { padding-block: 10px 8px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.brand { font-family: var(--f-display); font-weight: 800; font-size: 1.05rem; display: flex; align-items: center; gap: 8px; }
+.brand svg { width: 22px; height: 22px; }
+.who { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px 5px 6px; display: flex; align-items: center; gap: 7px; font-size: .85rem; font-weight: 600; }
+.avatar { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: .75rem; font-weight: 700; flex: none; }
+.av-Keren { background: var(--c-busan); } .av-Gabush { background: var(--sakura); }
+
+/* bottom nav */
+nav.tabs { position: fixed; left: 0; right: 0; bottom: 0; z-index: 6; background: var(--card); border-top: 1px solid var(--line);
+  padding: 6px max(8px, env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px)) max(8px, env(safe-area-inset-left, 0px)); }
+nav.tabs .in { max-width: 560px; margin: 0 auto; display: grid; grid-template-columns: repeat(5, 1fr); }
+nav.tabs a { display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 6px 0; color: var(--muted); text-decoration: none; font-size: .7rem; font-weight: 600; border-radius: 12px; }
+nav.tabs a svg { width: 23px; height: 23px; }
+nav.tabs a[aria-current="page"] { color: var(--sakura); }
+
+/* hero */
+.hero { padding: 6px 0 2px; display: flex; flex-direction: column; gap: 8px; }
+.big-count { font-family: var(--f-display); font-weight: 800; font-size: 4.6rem; line-height: .9; letter-spacing: -0.04em; color: var(--sakura); }
+.chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 3px 10px; font-size: .78rem; font-weight: 600; background: var(--line); color: var(--ink); }
+.chip .dot { width: 8px; height: 8px; border-radius: 50%; }
+.clocks { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.clock { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 10px 12px; }
+.clock b { font-family: var(--f-display); font-size: 1.5rem; display: block; line-height: 1.1; }
+
+/* route */
+.route svg { width: 100%; height: auto; display: block; overflow: visible; }
+.route text { font: 600 10.5px var(--f-body); fill: var(--muted); }
+.route .cur { fill: var(--ink); font-weight: 700; }
+
+/* day */
+.slot { display: grid; grid-template-columns: 76px 1fr; gap: 10px; padding: 11px 0; border-top: 1px dashed var(--line); }
+.slot:first-of-type { border-top: 0; }
+.slot .when { font-size: .72rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding-top: 2px; }
+.travel { background: var(--celadon-soft); border-radius: 14px; padding: 12px 14px; display: flex; gap: 10px; }
+.travel svg { flex: none; width: 20px; height: 20px; color: var(--celadon); margin-top: 2px; }
+.maplinks { display: flex; flex-wrap: wrap; gap: 6px; }
+.maplinks a { font-size: .8rem; text-decoration: none; color: var(--ink); border: 1px solid var(--line); border-radius: 999px; padding: 4px 10px; background: var(--paper); }
+.daynav { display: flex; justify-content: space-between; gap: 10px; }
+.btn { border: 1px solid var(--line); background: var(--card); border-radius: 12px; padding: 9px 14px; font-weight: 600; font-size: .9rem; text-decoration: none; color: var(--ink); display: inline-flex; align-items: center; gap: 6px; }
+.btn.primary { background: var(--sakura); border-color: var(--sakura); color: #fff; }
+.btn:disabled { opacity: .4; cursor: default; }
+textarea, input[type=text], input[type=number], select { width: 100%; border: 1px solid var(--line); background: var(--paper); border-radius: 12px; padding: 10px 12px; }
+textarea { resize: vertical; min-height: 64px; }
+.moment { display: grid; grid-template-columns: 28px 1fr; gap: 10px; align-items: start; }
+.moment p { white-space: pre-wrap; overflow-wrap: anywhere; }
+
+/* plan list */
+.city-h { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; margin-top: 8px; }
+.city-h h2 { display: flex; align-items: baseline; gap: 8px; }
+.city-h .cjk { font-family: var(--f-cjk); font-size: .95rem; color: var(--muted); font-weight: 500; }
+.dayrow { display: grid; grid-template-columns: 46px 1fr 14px; gap: 12px; align-items: center; padding: 12px 14px; text-decoration: none; color: var(--ink); border-top: 1px solid var(--line); }
+.dayrow:first-child { border-top: 0; }
+.dayrow .d { text-align: center; line-height: 1.05; }
+.dayrow .d b { font-family: var(--f-display); font-size: 1.35rem; display: block; }
+.dayrow .d span { font-size: .66rem; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.dayrow.today { background: var(--sakura-soft); }
+.list { padding: 0; overflow: hidden; }
+
+/* stamps */
+.stamps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.stamp { border: 1px dashed var(--line); background: var(--card); border-radius: 16px; padding: 12px 8px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; min-width: 0; }
+.seal { width: 62px; height: 62px; border-radius: 50%; display: grid; place-items: center; font-family: var(--f-cjk); font-size: 1.75rem; font-weight: 700; color: var(--line); border: 2.5px solid var(--line); transition: transform .35s cubic-bezier(.2,1.6,.4,1); }
+.stamp.got { border-style: solid; }
+.stamp.got .seal { color: var(--seal); border-color: var(--seal); transform: rotate(-9deg); box-shadow: inset 0 0 0 3px var(--card), inset 0 0 0 4.5px var(--seal); }
+.stamp .lbl { font-size: .78rem; font-weight: 600; line-height: 1.25; }
+.stamp .by { font-size: .68rem; color: var(--muted); min-height: 1em; }
+.meter { height: 10px; border-radius: 999px; background: var(--line); overflow: hidden; }
+.meter i { display: block; height: 100%; background: linear-gradient(90deg, var(--celadon), var(--sakura)); border-radius: 999px; transition: width .6s; }
+
+/* money */
+.balance { font-family: var(--f-display); font-size: 1.6rem; font-weight: 800; line-height: 1.15; }
+.form-grid { display: grid; grid-template-columns: 1fr 110px; gap: 8px; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--paper); }
+.seg button { flex: 1; border: 0; background: transparent; padding: 8px 4px; font-size: .82rem; font-weight: 600; color: var(--muted); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--paper); }
+.exp { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: center; padding: 10px 0; border-top: 1px solid var(--line); }
+.exp:first-child { border-top: 0; }
+.exp .amt { text-align: right; font-weight: 600; }
+.x { border: 0; background: none; color: var(--muted); font-size: .75rem; padding: 2px 0; }
+.conv { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.conv div { background: var(--paper); border-radius: 12px; padding: 8px 10px; }
+.conv b { display: block; font-size: 1.05rem; }
+
+/* phrases */
+.phrase { display: grid; grid-template-columns: 1fr auto; gap: 4px 10px; padding: 12px 0; border-top: 1px solid var(--line); text-align: left; width: 100%; background: none; border-left: 0; border-right: 0; border-bottom: 0; }
+.phrase:first-child { border-top: 0; }
+.phrase .native { font-family: var(--f-cjk); font-size: 1.2rem; font-weight: 600; }
+.phrase .rom { color: var(--sakura); font-weight: 600; font-size: .88rem; }
+.phrase .show { grid-row: 1 / span 3; grid-column: 2; align-self: center; font-size: .72rem; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+.showcard { position: fixed; inset: 0; z-index: 20; background: var(--card); display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; text-align: center;
+  padding: calc(24px + env(safe-area-inset-top, 0px)) max(24px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(24px, env(safe-area-inset-left, 0px)); }
+.showcard .native { font-family: var(--f-cjk); font-size: clamp(2.2rem, 11vw, 4.5rem); font-weight: 700; line-height: 1.2; overflow-wrap: anywhere; }
+.check { display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start; padding: 9px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.check:first-child { border-top: 0; }
+.check input { width: 20px; height: 20px; accent-color: var(--celadon); margin: 2px 0 0; }
+.check.done span { color: var(--muted); text-decoration: line-through; }
+.sheet { position: fixed; inset: 0; z-index: 30; background: rgba(10,14,22,.45); display: grid; place-items: end center; }
+.sheet .card { width: min(560px, 100%); border-radius: 22px 22px 0 0; padding: 22px max(20px, env(safe-area-inset-right, 0px)) calc(24px + env(safe-area-inset-bottom, 0px)) max(20px, env(safe-area-inset-left, 0px)); }
+.pick { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.pick button { border: 1px solid var(--line); background: var(--paper); border-radius: 16px; padding: 16px 10px; display: flex; flex-direction: column; align-items: center; gap: 8px; font-weight: 700; }
+.pick .avatar { width: 44px; height: 44px; font-size: 1.1rem; }
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: calc(84px + env(safe-area-inset-bottom, 0px)); background: var(--ink); color: var(--paper); padding: 9px 16px; border-radius: 999px; font-size: .85rem; font-weight: 600; z-index: 40; }
+#petals { position: fixed; inset: 0; pointer-events: none; z-index: 35; width: 100%; height: 100%; }
+@media (prefers-reduced-motion: reduce) { .seal, .meter i { transition: none; } }
+</style>
+
+<div class="top"><div class="wrap">
+  <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="var(--sakura)"><ellipse cx="12" cy="6" rx="3.2" ry="4.6"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(72 12 12)"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(144 12 12)"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(216 12 12)"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(288 12 12)"/></g><circle cx="12" cy="12" r="2.2" fill="var(--card)"/></svg>Sakura Chase</div>
+  <button class="who" id="whoBtn" type="button" aria-label="Change who is using this phone"></button>
+</div></div>
+
+<main class="wrap" id="view" aria-live="polite"></main>
+
+<nav class="tabs" aria-label="Sections"><div class="in">
+  <a href="#today" data-tab="today"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4"/><path d="M12 2.5v2M12 19.5v2M2.5 12h2M19.5 12h2M5.3 5.3l1.4 1.4M17.3 17.3l1.4 1.4M5.3 18.7l1.4-1.4M17.3 6.7l1.4-1.4"/></svg>Today</a>
+  <a href="#plan" data-tab="plan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 4 3 6.5v13L9 17l6 2.5 6-2.5v-13L15 6.5 9 4z"/><path d="M9 4v13M15 6.5v13"/></svg>Plan</a>
+  <a href="#stamps" data-tab="stamps"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="5.5" stroke-dasharray="2 2"/></svg>Stamps</a>
+  <a href="#money" data-tab="money"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><rect x="3" y="6" width="18" height="12" rx="3"/><circle cx="12" cy="12" r="2.6"/><path d="M6.5 9.5v5M17.5 9.5v5"/></svg>Money</a>
+  <a href="#phrases" data-tab="phrases"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><path d="M4 5h16v10H10l-4 4v-4H4z"/><path d="M8 9h8M8 12h5" stroke-linecap="round"/></svg>Say it</a>
+</div></nav>
+<canvas id="petals" hidden></canvas>
+
+<script>
+/* ---------------- Trip data ---------------- */
+const START = "2027-04-13", END = "2027-04-29";
+const PEOPLE = ["Keren", "Gabush"];
+const CITIES = {
+  seoul:    { name: "Seoul", cjk: "서울", kr: true, from: "2027-04-13", to: "2027-04-18", stay: "Jongno / Anguk", weather: "Typical April: highs about 19°C, lows about 7°C, mostly dry and sunny.", food: "Mung-bean pancakes at Gwangjang, pork-belly barbecue, hand-cut noodle soup, fried chicken and beer.", tip: "Use Naver Map or Kakao Map. Google Maps barely works for walking and transit in Korea." },
+  gyeongju: { name: "Gyeongju", cjk: "경주", kr: true, from: "2027-04-18", to: "2027-04-20", stay: "Hwangridan-gil hanok", weather: "Typical April: highs about 20°C, cool evenings around 8°C.", food: "Hwangnam bread (red-bean pastry) and ssambap, rice with a dozen leaf wraps.", tip: "Rent bikes near the tombs. The centre is flat and easy." },
+  busan:    { name: "Busan", cjk: "부산", kr: true, from: "2027-04-20", to: "2027-04-23", stay: "Haeundae", weather: "Typical April: highs about 19°C, lows about 11°C, breezy by the sea.", food: "Dwaeji-gukbap (pork and rice soup), seed-filled ssiat hotteok, fresh fish at Jagalchi.", tip: "At the jjimjilbang you get a T-shirt-and-shorts uniform for the shared halls; the baths themselves are nude and separated by gender." },
+  hirosaki: { name: "Hirosaki", cjk: "弘前", kr: false, from: "2027-04-23", to: "2027-04-27", stay: "Near Hirosaki station or the park", weather: "Typical late April: 12 to 16°C by day, near freezing at night. Bring the down jacket.", food: "Aomori scallops, the nokke-don market rice bowl, Hirosaki apple pie, small French bistros.", tip: "Carry a bear bell on forest trails such as Oirase." },
+  tokyo:    { name: "Tokyo", cjk: "東京", kr: false, from: "2027-04-27", to: "2027-04-29", stay: "Nihonbashi or Kiyosumi-Shirakawa", weather: "Typical late April: highs about 20°C, lows about 11°C.", food: "Ramen, tonkatsu, yakitori; Tabelog scores above 3.5 are very good.", tip: "29 April is Showa Day, the start of Golden Week. Leave extra time for the airport." }
+};
+const CITY_ORDER = ["seoul", "gyeongju", "busan", "hirosaki", "tokyo"];
+const HOTELS = {
+  seoul:    { name: "Nine Tree by Parnas Seoul Insadong", address: "49 Insadong-gil, Jongno-gu, Seoul 03145" },
+  gyeongju: { name: "Hwangnamkwan Hanok Village", address: "1038 Poseok-ro, Gyeongju" },
+  busan:    { name: "Shilla Stay Haeundae", address: "46 Haeundae-ro 570beon-gil, Haeundae-gu, Busan" },
+  hirosaki: { name: "Dormy Inn Hirosaki", address: "71-1 Honcho, Hirosaki, Aomori 036-8203", note: "Natural hot-spring bath on site" },
+  tokyo:    { name: "Mitsui Garden Hotel Nihonbashi Premier", address: "3-4-4 Nihonbashimuromachi, Chuo-ku, Tokyo 103-0022" }
+};
+const DAYS = [
+  { date: "2027-04-13", city: "seoul", title: "Annyeong, Seoul",
+    travel: "El Al LY077 left Tel Aviv Mon 12 Apr at 23:45 and lands at Incheon at 15:20. AREX train or taxi to Insadong, about an hour.",
+    morning: "Somewhere over Asia. Sleep if you can.", afternoon: "Land at Incheon 15:20, ride into Insadong and check in.", evening: "Stroll Ikseon-dong's hanok alleys, then a Korean barbecue dinner.",
+    places: ["Ikseon-dong", "Insadong"] },
+  { date: "2027-04-14", city: "seoul", title: "Palaces and art",
+    morning: "Changdeokgung palace and its Secret Garden (book the garden tour).", afternoon: "MMCA Seoul and the galleries of Samcheong-dong; the quiet lanes of Bukchon.", evening: "Gwangjang Market for mung-bean pancakes and dumplings.",
+    places: ["Changdeokgung", "MMCA Seoul", "Bukchon Hanok Village", "Gwangjang Market"] },
+  { date: "2027-04-15", city: "seoul", title: "Three architects and a spaceship",
+    morning: "Leeum Museum in Hannam: buildings by Botta, Nouvel and Koolhaas.", afternoon: "Amorepacific HQ and museum by Chipperfield; Songeun art space by Herzog & de Meuron.", evening: "Zaha Hadid's DDP lit up, then bars in the old print alleys of Euljiro.",
+    places: ["Leeum Museum of Art", "Amorepacific Museum of Art", "Songeun", "Dongdaemun Design Plaza", "Euljiro"] },
+  { date: "2027-04-16", city: "seoul", title: "Food and people",
+    morning: "Korean cooking class with a market visit.", afternoon: "Mangwon Market, then a bike ride along the Han River.", evening: "Language-exchange evening in Hongdae.",
+    places: ["Mangwon Market", "Mangwon Hangang Park", "Hongdae"] },
+  { date: "2027-04-17", city: "seoul", title: "Granite peaks and a sunset wall",
+    morning: "Bukhansan hike to Baegundae peak. Join an English-speaking weekend group hike if one runs.", afternoon: "Recover in a bathhouse or a café in Seongsu-dong.", evening: "Seoul City Wall walk on Inwangsan at sunset. Flex option: a templestay overnight.",
+    places: ["Bukhansan Baegundae", "Seongsu-dong", "Inwangsan"] },
+  { date: "2027-04-18", city: "gyeongju", title: "Royal tombs by bike",
+    travel: "KTX from Seoul Station to Singyeongju, about 2 hours. Bus or taxi into town.",
+    morning: "KTX south and check in to the hanok.", afternoon: "Bikes to the royal tombs, Cheomseongdae observatory and Gyochon village.", evening: "Donggung Palace pond and Woljeonggyo bridge at dusk.",
+    places: ["Daereungwon", "Cheomseongdae", "Gyochon Hanok Village", "Donggung Palace and Wolji Pond", "Woljeonggyo"] },
+  { date: "2027-04-19", city: "gyeongju", title: "Buddhas in the rock",
+    morning: "Early start at Bulguksa temple and Seokguram grotto, before the buses.", afternoon: "Namsan hike through the Samneung valley's rock-carved Buddhas.", evening: "Cafés and dinner on Hwangridan-gil.",
+    places: ["Bulguksa", "Seokguram", "Samneung Valley", "Hwangridan-gil"] },
+  { date: "2027-04-20", city: "busan", title: "To the sea",
+    travel: "Train or bus to Busan, about 1 hour. Check in at Haeundae.",
+    morning: "Short hop to Busan.", afternoon: "Haedong Yonggungsa, the temple on the sea rocks.", evening: "Haeundae beach promenade and market.",
+    places: ["Haedong Yonggungsa", "Haeundae Beach", "Haeundae Market"] },
+  { date: "2027-04-21", city: "busan", title: "Cliffs and a lit-up bridge",
+    morning: "Igidae coastal trail from the Oryukdo Skywalk, about 2.5 hours.", afternoon: "F1963: wire factory turned gallery, bookshop and tea house.", evening: "Gwangalli beach under the lit-up Gwangan Bridge.",
+    places: ["Oryukdo Skywalk", "Igidae Coastal Walk", "F1963", "Gwangalli Beach"] },
+  { date: "2027-04-22", city: "busan", title: "Islands, fish and a long soak",
+    morning: "Huinnyeoul Culture Village and the cliff path on Yeongdo.", afternoon: "Jagalchi fish market, and seed-filled hotteok at BIFF Square.", evening: "Spa Land bathhouse at Centum City, then dinner.",
+    places: ["Huinnyeoul Culture Village", "Jagalchi Market", "BIFF Square", "Spa Land Centum City"] },
+  { date: "2027-04-23", city: "hirosaki", title: "Chasing the blossoms north",
+    travel: "The long one: fly Busan to Tokyo (about 2 h, flight to be booked), Hayabusa shinkansen to Shin-Aomori (about 3 h), local train to Hirosaki.",
+    morning: "Fly Busan to Tokyo.", afternoon: "Shinkansen north. Ekiben lunch on the train.", evening: "Hotel hot-spring bath, then Hirosaki Park's blossoms lit up at night.",
+    places: ["Hirosaki Park"] },
+  { date: "2027-04-24", city: "hirosaki", title: "Castle, moats, 2,600 cherry trees",
+    morning: "Hirosaki Park at 6 am, in the calm, then Fujita Memorial Garden.", afternoon: "Hirosaki Museum of Contemporary Art; Meiji-era Western buildings and Maekawa modernism.", evening: "Festival food stalls and a small French bistro. Flex option: Kakunodate samurai street day trip.",
+    places: ["Hirosaki Park", "Fujita Memorial Garden", "Hirosaki Museum of Contemporary Art"] },
+  { date: "2027-04-25", city: "hirosaki", title: "Aomori: the white dog and shamisen",
+    morning: "Train to Aomori (45 min) and build-your-own seafood rice bowl at the fish market.", afternoon: "Aomori Museum of Art (Jun Aoki, Yoshitomo Nara) and Sannai-Maruyama next door.", evening: "Tsugaru shamisen live music in Aomori, then the train back.",
+    places: ["Furukawa Fish Market Aomori", "Aomori Museum of Art", "Sannai-Maruyama"] },
+  { date: "2027-04-26", city: "hirosaki", title: "Oirase Gorge",
+    morning: "Bus from Aomori to Oirase Gorge (check the spring timetable).", afternoon: "Walk the gorge stream path towards Lake Towada. Any section works. Bring the bear bell.", evening: "Back to Hirosaki for a long hot-spring soak.",
+    places: ["Oirase Gorge", "Lake Towada"] },
+  { date: "2027-04-27", city: "tokyo", title: "Tokyo, the quiet side",
+    travel: "Shinkansen to Tokyo, about 3.5 to 4 hours.",
+    morning: "Train south.", afternoon: "Yanaka's old wooden streets and small craft shops.", evening: "Dinner in Nihonbashi.",
+    places: ["Yanaka Ginza", "Nihonbashi"] },
+  { date: "2027-04-28", city: "tokyo", title: "Gardens, coffee, record shops",
+    morning: "Kiyosumi Gardens and the Museum of Contemporary Art Tokyo.", afternoon: "Specialty coffee and galleries around Kiyosumi-Shirakawa.", evening: "Shimokitazawa's small bars and record shops.",
+    places: ["Kiyosumi Gardens", "Museum of Contemporary Art Tokyo", "Shimokitazawa"] },
+  { date: "2027-04-29", city: "tokyo", title: "Sayonara",
+    travel: "Direct train from Nihonbashi to Narita, about 1 hour. El Al LY092 departs 10:35 and lands in Tel Aviv at 17:20 (operating day still to be confirmed). It's Showa Day, so leave early.",
+    morning: "Train to Narita.", afternoon: "Flight home.", evening: "Land in Tel Aviv.",
+    places: [] }
+];
+const STAMPS = [
+  { id: "bindae", g: "빈", label: "Mung-bean pancake at Gwangjang", city: "seoul" },
+  { id: "wall", g: "성", label: "Sunset on the City Wall", city: "seoul" },
+  { id: "leeum", g: "미", label: "Leeum's three architects", city: "seoul" },
+  { id: "bukhan", g: "산", label: "A Bukhansan summit", city: "seoul" },
+  { id: "photobooth", g: "컷", label: "Four-cut photo booth", city: "seoul" },
+  { id: "friend", g: "友", label: "Made a local friend", city: "any" },
+  { id: "tombs", g: "릉", label: "Cycled the royal tombs", city: "gyeongju" },
+  { id: "seokguram", g: "불", label: "Seokguram before the buses", city: "gyeongju" },
+  { id: "hwangnam", g: "빵", label: "Ate Hwangnam bread", city: "gyeongju" },
+  { id: "igidae", g: "길", label: "Igidae cliff trail", city: "busan" },
+  { id: "jjimjil", g: "찜", label: "Survived the jjimjilbang", city: "busan" },
+  { id: "hotteok", g: "떡", label: "Seed hotteok, hot", city: "busan" },
+  { id: "sakura6", g: "桜", label: "Hirosaki Park at 6 am", city: "hirosaki" },
+  { id: "applepie", g: "林", label: "Three apple pies, rated", city: "hirosaki" },
+  { id: "oirase", g: "渓", label: "Walked Oirase Gorge", city: "hirosaki" },
+  { id: "onsen", g: "湯", label: "Mountain onsen soak", city: "hirosaki" },
+  { id: "nokke", g: "丼", label: "Built a nokke-don", city: "hirosaki" },
+  { id: "shamisen", g: "音", label: "Tsugaru shamisen live", city: "hirosaki" },
+  { id: "dog", g: "犬", label: "Met Nara's white dog", city: "hirosaki" },
+  { id: "yanaka", g: "谷", label: "Yanaka's old streets", city: "tokyo" },
+  { id: "records", g: "盤", label: "Found a record in Shimokita", city: "tokyo" }
+];
+const PREP = [
+  { id: "flights", t: "Book flights: Tel Aviv to Seoul, home from Tokyo (open-jaw)" },
+  { id: "hirosaki", t: "Book the Hirosaki hotel first; it sells out for the blossoms" },
+  { id: "hotels", t: "Book Seoul, Gyeongju hanok, Busan and Tokyo hotels" },
+  { id: "pus-tyo", t: "Book the Busan to Tokyo flight" },
+  { id: "keta", t: "Check Korea K-ETA for Israeli passports, apply a month before" },
+  { id: "insurance", t: "Travel insurance with medical cover" },
+  { id: "shinkansen", t: "Buy shinkansen tickets about a month ahead" },
+  { id: "classes", t: "Reserve the cooking class and one or two special dinners" },
+  { id: "esim", t: "eSIMs for both phones, and shared live location" },
+  { id: "apps", t: "Install Naver Map, Kakao T, GO taxi and Japan's Safety Tips app" },
+  { id: "cards", t: "Load T-money and Suica onto your phones" },
+  { id: "pack", t: "Pack layers, a light down jacket, good walking shoes, a bear bell" }
+];
+const PHRASES = {
+  ko: [
+    ["Hello", "안녕하세요", "an-nyeong-ha-se-yo"],
+    ["Thank you", "감사합니다", "gam-sa-ham-ni-da"],
+    ["Not spicy, please", "안 맵게 해 주세요", "an maep-ge hae ju-se-yo"],
+    ["This one, please", "이거 주세요", "i-geo ju-se-yo"],
+    ["Two people", "두 명이요", "du myeong-i-yo"],
+    ["Water, please", "물 주세요", "mul ju-se-yo"],
+    ["It's delicious!", "맛있어요!", "ma-si-sseo-yo"],
+    ["How much is it?", "얼마예요?", "eol-ma-ye-yo"],
+    ["The bill, please", "계산해 주세요", "gye-san-hae ju-se-yo"],
+    ["Where is the restroom?", "화장실 어디예요?", "hwa-jang-sil eo-di-ye-yo"],
+    ["Could you take our photo?", "사진 좀 찍어 주시겠어요?", "sa-jin jom jji-geo ju-si-ge-sseo-yo"],
+    ["We're from Israel", "이스라엘에서 왔어요", "i-seu-ra-el-e-seo wa-sseo-yo"],
+    ["Cheers!", "건배!", "geon-bae"]
+  ],
+  ja: [
+    ["Hello", "こんにちは", "kon-ni-chi-wa"],
+    ["Thank you", "ありがとうございます", "a-ri-ga-tō go-zai-mas"],
+    ["Excuse me", "すみません", "su-mi-ma-sen"],
+    ["This one, please", "これをください", "ko-re o ku-da-sai"],
+    ["Two people", "二人です", "fu-ta-ri des"],
+    ["It's delicious!", "おいしい！", "oi-shii"],
+    ["How much is it?", "いくらですか？", "i-ku-ra des ka"],
+    ["The bill, please", "お会計お願いします", "o-kai-kei o-ne-gai-shi-mas"],
+    ["Where is the restroom?", "トイレはどこですか？", "toi-re wa do-ko des ka"],
+    ["Could you take our photo?", "写真を撮っていただけますか？", "sha-shin o tot-te i-ta-da-ke-mas ka"],
+    ["The blossoms are beautiful", "桜がきれいですね", "sa-ku-ra ga ki-rei des ne"],
+    ["We're from Israel", "イスラエルから来ました", "i-su-ra-e-ru ka-ra ki-ma-shi-ta"],
+    ["Cheers!", "乾杯！", "kan-pai"]
+  ]
+};
+const DEFAULT_RATES = { KRW: 390, JPY: 41, USD: 0.27 }; // units per 1 ILS, approximate
+const CUR_SYM = { ILS: "₪", KRW: "₩", JPY: "¥", USD: "$" };
+
+/* ---------------- helpers ---------------- */
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+const ls = { get(k, d) { try { const v = localStorage.getItem("sc:" + k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+             set(k, v) { try { localStorage.setItem("sc:" + k, JSON.stringify(v)); } catch {} } };
+const ymdIn = (tz, d = new Date()) => new Intl.DateTimeFormat("en-CA", { timeZone: tz, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
+const timeIn = (tz, d = new Date()) => new Intl.DateTimeFormat("en-GB", { timeZone: tz, hour: "2-digit", minute: "2-digit" }).format(d);
+const parseYmd = s => { const [y, m, d] = s.split("-").map(Number); return Date.UTC(y, m - 1, d); };
+const dayDiff = (a, b) => Math.round((parseYmd(b) - parseYmd(a)) / 864e5);
+const fmtDate = (s, opts) => new Date(parseYmd(s)).toLocaleDateString("en-GB", { timeZone: "UTC", ...opts });
+const todayLocal = () => ymdIn("Asia/Seoul");
+const mapUrl = (q, city) => CITIES[city].kr ? "https://map.naver.com/p/search/" + encodeURIComponent(q) : "https://www.google.com/maps/search/?api=1&query=" + encodeURIComponent(q + " " + CITIES[city].name);
+const fmtMoney = (n, cur) => CUR_SYM[cur] + (cur === "KRW" || cur === "JPY" ? Math.round(n).toLocaleString("en-US") : (Math.round(n * 100) / 100).toLocaleString("en-US", { minimumFractionDigits: cur === "ILS" || cur === "USD" ? 0 : 0, maximumFractionDigits: 2 }));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
+
+/* ---------------- shared store: db when available, this phone otherwise ---------------- */
+const COLS = ["expenses", "stamps", "journal", "prep", "settings"];
+const Store = {
+  db: null, shared: false,
+  data: Object.fromEntries(COLS.map(c => [c, ls.get("col:" + c, {})])),
+  async init() {
+    try { this.db = window.claude?.use ? await window.claude.use("db") : null; } catch { this.db = null; }
+    if (!this.db) return;
+    this.shared = true;
+    for (const c of COLS) {
+      this.db.collection(c).onSnapshot(snap => {
+        const m = {}; snap.docs.forEach(d => { m[d.id] = d.data(); });
+        this.data[c] = m; ls.set("col:" + c, m); render();
+      }, () => {});
+    }
+    render();
+  },
+  all(c) { return this.data[c] || {}; },
+  get(c, id) { return this.all(c)[id]; },
+  set(c, id, v) {
+    this.data[c] = { ...this.all(c), [id]: v }; ls.set("col:" + c, this.data[c]);
+    if (this.db) this.db.collection(c).doc(id).set(v).catch(e => toast(e?.code === "not_granted" ? "Only people invited to edit can save" : "Saved on this phone; will sync later"));
+  },
+  del(c, id) {
+    const m = { ...this.all(c) }; delete m[id]; this.data[c] = m; ls.set("col:" + c, m);
+    if (this.db) this.db.collection(c).doc(id).delete().catch(() => {});
+  }
+};
+const rates = () => ({ ...DEFAULT_RATES, ...(Store.get("settings", "rates") || {}) });
+const toILS = (amt, cur) => cur === "ILS" ? amt : amt / rates()[cur];
+
+/* ---------------- who is holding the phone ---------------- */
+let who = ls.get("who", null);
+function renderWho() {
+  const b = $("#whoBtn");
+  b.innerHTML = who ? `<span class="avatar av-${who}">${who[0]}</span>${who}` : `<span class="avatar" style="background:var(--muted)">?</span>Who are you?`;
+}
+function pickWho() {
+  const s = document.createElement("div"); s.className = "sheet";
+  s.innerHTML = `<div class="card stack" role="dialog" aria-modal="true" aria-label="Who is this phone"><h2>Whose phone is this?</h2><p class="muted small">Stamps, expenses and moments get signed with this name.</p>
+    <div class="pick">${PEOPLE.map(p => `<button type="button" data-p="${p}"><span class="avatar av-${p}">${p[0]}</span>${p}</button>`).join("")}</div></div>`;
+  s.addEventListener("click", e => { const b = e.target.closest("[data-p]"); if (b) { who = b.dataset.p; ls.set("who", who); renderWho(); s.remove(); render(); } else if (e.target === s && who) s.remove(); });
+  document.body.append(s);
+}
+$("#whoBtn").onclick = pickWho;
+
+/* ---------------- petals ---------------- */
+function petals(n = 46) {
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const c = $("#petals"); c.hidden = false; const dpr = devicePixelRatio || 1;
+  c.width = innerWidth * dpr; c.height = innerHeight * dpr; const x = c.getContext("2d"); x.scale(dpr, dpr);
+  const col = getComputedStyle(document.documentElement).getPropertyValue("--sakura").trim() || "#d9466f";
+  const ps = Array.from({ length: n }, () => ({ x: Math.random() * innerWidth, y: -20 - Math.random() * innerHeight * .5, r: 5 + Math.random() * 5, vy: 1.4 + Math.random() * 1.8, vx: -.6 + Math.random() * 1.2, a: Math.random() * 6, va: -.06 + Math.random() * .12, ph: Math.random() * 6 }));
+  const t0 = performance.now();
+  (function f(t) {
+    const el = t - t0; x.clearRect(0, 0, innerWidth, innerHeight);
+    x.globalAlpha = Math.max(0, Math.min(1, (3200 - el) / 600));
+    ps.forEach(p => { p.y += p.vy; p.x += p.vx + Math.sin((t / 400) + p.ph) * .7; p.a += p.va;
+      x.save(); x.translate(p.x, p.y); x.rotate(p.a); x.fillStyle = col;
+      x.beginPath(); x.moveTo(0, -p.r); x.bezierCurveTo(p.r, -p.r, p.r * .8, p.r * .6, 0, p.r); x.bezierCurveTo(-p.r * .8, p.r * .6, -p.r, -p.r, 0, -p.r); x.fill(); x.restore(); });
+    if (el < 3200) requestAnimationFrame(f); else { x.clearRect(0, 0, innerWidth, innerHeight); c.hidden = true; }
+  })(t0);
+}
+let toastT;
+function toast(msg) { document.querySelector(".toast")?.remove(); const t = document.createElement("div"); t.className = "toast"; t.textContent = msg; document.body.append(t); clearTimeout(toastT); toastT = setTimeout(() => t.remove(), 2200); }
+
+/* ---------------- shared bits ---------------- */
+function routeSvg(curCity, progress) {
+  const xs = [14, 92, 160, 250, 326];
+  const idx = curCity ? CITY_ORDER.indexOf(curCity) : -1;
+  let s = `<svg viewBox="0 0 340 62" role="img" aria-label="Route: Seoul, Gyeongju, Busan, Hirosaki, Tokyo">`;
+  s += `<line x1="14" y1="20" x2="160" y2="20" stroke="var(--line)" stroke-width="4" stroke-linecap="round"/>`;
+  s += `<line x1="160" y1="20" x2="250" y2="20" stroke="var(--line)" stroke-width="2.5" stroke-dasharray="3 6" stroke-linecap="round"/>`;
+  s += `<line x1="250" y1="20" x2="326" y2="20" stroke="var(--line)" stroke-width="4" stroke-linecap="round"/>`;
+  s += `<path d="M199 13.5l7 6.5-7 6.5M201 20h-8" fill="none" stroke="var(--muted)" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>`;
+  if (progress > 0) {
+    const px = 14 + (326 - 14) * Math.min(1, progress);
+    s += `<line x1="14" y1="20" x2="${px}" y2="20" stroke="var(--sakura)" stroke-width="4" stroke-linecap="round" opacity=".85"/>`;
+  }
+  CITY_ORDER.forEach((c, i) => {
+    const on = i === idx;
+    s += `<circle cx="${xs[i]}" cy="20" r="${on ? 9 : 6}" fill="${on ? `var(--c-${c})` : "var(--card)"}" stroke="var(--c-${c})" stroke-width="3"/>`;
+    s += `<text x="${xs[i]}" y="48" text-anchor="${i === 0 ? "start" : i === 4 ? "end" : "middle"}" class="${on ? "cur" : ""}" dx="${i === 0 ? -6 : i === 4 ? 6 : 0}">${CITIES[c].name}</text>`;
+  });
+  return s + `</svg>`;
+}
+const cityChip = c => `<span class="chip" style="background:color-mix(in srgb, var(--c-${c}) 16%, transparent)"><span class="dot" style="background:var(--c-${c})"></span>${CITIES[c].name} <span style="font-family:var(--f-cjk);font-weight:500">${CITIES[c].cjk}</span></span>`;
+const avatar = p => `<span class="avatar av-${esc(p)}">${esc(p)[0]}</span>`;
+
+function clocks() {
+  return `<div class="clocks"><div class="clock"><span class="eyebrow">Korea · Japan</span><b class="tnum">${timeIn("Asia/Seoul")}</b></div>
+    <div class="clock"><span class="eyebrow">Home · Tel Aviv</span><b class="tnum">${timeIn("Asia/Jerusalem")}</b></div></div>`;
+}
+
+function hotelCard(city) {
+  const h = HOTELS[city]; if (!h) return "";
+  return `<div class="card stack" style="gap:8px"><span class="eyebrow">Tonight's bed</span><h3>${esc(h.name)}</h3>
+    <p class="small muted" style="overflow-wrap:anywhere">${esc(h.address)}${h.note ? " · " + esc(h.note) : ""}</p>
+    <div class="row"><a class="btn" href="${mapUrl(h.name, city)}" target="_blank" rel="noopener">Directions ↗</a><button class="btn" type="button" data-hotel="${city}">Show the driver</button></div></div>`;
+}
+function dayCard(day, { isToday } = {}) {
+  const i = DAYS.indexOf(day), c = CITIES[day.city];
+  const prev = DAYS[i - 1], next = DAYS[i + 1];
+  const slot = (w, t) => `<div class="slot"><span class="when">${w}</span><p>${esc(t)}</p></div>`;
+  const moments = PEOPLE.map(p => {
+    const m = Store.get("journal", day.date + "_" + p);
+    if (p === who) return `<div class="moment">${avatar(p)}<div class="stack" style="gap:6px"><label class="small muted" for="mom-${day.date}">Your best moment of the day</label>
+      <textarea id="mom-${day.date}" data-mom="${day.date}" placeholder="The thing you'll still talk about in ten years…">${esc(m?.text || "")}</textarea></div></div>`;
+    return `<div class="moment">${avatar(p)}<p class="${m?.text ? "" : "muted small"}">${m?.text ? esc(m.text) : p + " hasn't written yet."}</p></div>`;
+  }).join("");
+  return `
+  <section class="hero">
+    <div class="row">${cityChip(day.city)}<span class="eyebrow">Day ${i + 1} of ${DAYS.length}${isToday ? " · today" : ""}</span></div>
+    <h1>${esc(day.title)}</h1>
+    <p class="muted">${fmtDate(day.date, { weekday: "long", day: "numeric", month: "long" })}</p>
+  </section>
+  ${day.travel ? `<div class="travel"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="14" rx="3"/><path d="M5 11h14M8.5 21l2-4M15.5 21l-2-4"/><circle cx="9" cy="14" r=".8" fill="currentColor"/><circle cx="15" cy="14" r=".8" fill="currentColor"/></svg><p><b>Travel day.</b> ${esc(day.travel)}</p></div>` : ""}
+  <div class="card">${slot("Morning", day.morning)}${slot("Afternoon", day.afternoon)}${slot("Evening", day.evening)}</div>
+  ${day.places.length ? `<div class="stack" style="gap:8px"><span class="eyebrow">Open in ${c.kr ? "Naver Map" : "Google Maps"}</span><div class="maplinks">${day.places.map(p => `<a href="${mapUrl(p, day.city)}" target="_blank" rel="noopener">${esc(p)} ↗</a>`).join("")}</div></div>` : ""}
+  ${day.date === END ? "" : hotelCard(day.city)}
+  <div class="card stack" style="gap:10px"><span class="eyebrow">${esc(c.name)} cheat sheet</span>
+
+    <p><b>Eat:</b> ${esc(c.food)}</p><p><b>Weather:</b> ${esc(c.weather)}</p><p><b>Tip:</b> ${esc(c.tip)}</p></div>
+  <div class="card stack"><h3>Moments</h3>${who ? moments : `<button class="btn" type="button" onclick="pickWho()">Tell me who you are to write</button>`}</div>
+  <div class="daynav">
+    ${prev ? `<a class="btn" href="#day-${prev.date}">← ${fmtDate(prev.date, { day: "numeric", month: "short" })}</a>` : "<span></span>"}
+    ${next ? `<a class="btn" href="#day-${next.date}">${fmtDate(next.date, { day: "numeric", month: "short" })} →</a>` : "<span></span>"}
+  </div>`;
+}
+
+/* ---------------- views ---------------- */
+function viewToday() {
+  const t = todayLocal();
+  if (t < START) {
+    const n = dayDiff(t, START);
+    const done = PREP.filter(p => Store.get("prep", p.id)?.done).length;
+    return `
+    <section class="hero" style="padding-top:14px">
+      <span class="eyebrow">El Al LY077 · Tel Aviv → Seoul · Mon 12 Apr, 23:45</span>
+      <div class="big-count tnum">${n}</div>
+      <h1>${n === 1 ? "sleep" : "sleeps"} until Seoul</h1>
+      <p class="muted">17 days, 5 bases, 2 countries, and one very well-timed cherry blossom chase. 13 to 29 April 2027.</p>
+    </section>
+    <div class="card route">${routeSvg(null, 0)}</div>
+    <div class="card"><div class="row" style="justify-content:space-between;margin-bottom:6px"><h3>Before we fly</h3><span class="muted small tnum">${done} of ${PREP.length}</span></div>
+      <div class="meter" style="margin-bottom:8px"><i style="width:${done / PREP.length * 100}%"></i></div>
+      ${PREP.map(p => { const d = Store.get("prep", p.id); return `<label class="check ${d?.done ? "done" : ""}"><input type="checkbox" data-prep="${p.id}" ${d?.done ? "checked" : ""}><span>${esc(p.t)}${d?.done && d.by ? ` <span class="small muted">· ${esc(d.by)}</span>` : ""}</span></label>`; }).join("")}
+    </div>
+    <a class="btn" href="#day-${START}" style="align-self:flex-start">Peek at day 1 →</a>
+    ${shareNote()}`;
+  }
+  if (t > END) {
+    const mem = DAYS.map(d => ({ d, ms: PEOPLE.map(p => [p, Store.get("journal", d.date + "_" + p)?.text]).filter(x => x[1]) })).filter(x => x.ms.length);
+    const got = STAMPS.filter(s => Store.get("stamps", s.id)).length;
+    return `<section class="hero" style="padding-top:14px"><span class="eyebrow">Trip complete</span><h1>We did it.</h1>
+      <p class="muted">${got} of ${STAMPS.length} stamps collected. Here is what you wrote along the way.</p></section>
+      ${mem.length ? mem.map(({ d, ms }) => `<div class="card stack" style="gap:8px"><div class="row">${cityChip(d.city)}<span class="small muted">${fmtDate(d.date, { day: "numeric", month: "short" })} · ${esc(d.title)}</span></div>${ms.map(([p, tx]) => `<div class="moment">${avatar(p)}<p>${esc(tx)}</p></div>`).join("")}</div>`).join("") : `<p class="muted">No moments were written down. Time for another trip.</p>`}`;
+  }
+  const day = DAYS.find(d => d.date === t) || DAYS[0];
+  const progress = dayDiff(START, t) / dayDiff(START, END);
+  return `${clocks()}<div class="card route">${routeSvg(day.city, progress)}</div>${dayCard(day, { isToday: true })}`;
+}
+
+function shareNote() {
+  return Store.shared ? "" : `<p class="small muted">Ticks, stamps and expenses are saved on this phone only right now. Each phone keeps its own copy.</p>`;
+}
+
+function viewPlan() {
+  const t = todayLocal();
+  return `<section class="hero"><span class="eyebrow">13 to 29 April 2027</span><h1>The route</h1></section>
+  <div class="card route">${routeSvg(t >= START && t <= END ? (DAYS.find(d => d.date === t) || {}).city : null, t >= START ? dayDiff(START, t > END ? END : t) / dayDiff(START, END) : 0)}</div>
+  ${CITY_ORDER.map(c => {
+    const ds = DAYS.filter(d => d.city === c), C = CITIES[c];
+    const nights = dayDiff(C.from, C.to);
+    return `<div class="city-h"><h2 style="color:var(--c-${c})">${C.name} <span class="cjk">${C.cjk}</span></h2><span class="small muted">${nights} night${nights > 1 ? "s" : ""}${c === "tokyo" ? " · fly home" : ""}</span></div>
+    <div class="card list">${ds.map(d => `<a class="dayrow ${d.date === t ? "today" : ""}" href="#day-${d.date}">
+      <span class="d"><span>${fmtDate(d.date, { weekday: "short" })}</span><b class="tnum">${fmtDate(d.date, { day: "numeric" })}</b></span>
+      <span style="min-width:0"><b style="display:block">${esc(d.title)}</b><span class="small muted">${d.travel ? "Travel day · " : ""}${esc(d.morning)}</span></span>
+      <span class="muted" aria-hidden="true">›</span></a>`).join("")}</div>`;
+  }).join("")}
+  <p class="small muted">Hotels and flights are the planned picks. Book them, then tick them off on the Today screen.</p>`;
+}
+
+function viewStamps() {
+  const got = STAMPS.filter(s => Store.get("stamps", s.id)).length;
+  return `<section class="hero"><span class="eyebrow">Stamp book</span><h1>${got} of ${STAMPS.length} collected</h1>
+    <p class="muted">Tap a seal when you've done it. Each one is a word from where you are: 빈 for bindae-tteok, 湯 for hot water.</p>
+    <div class="meter"><i style="width:${got / STAMPS.length * 100}%"></i></div></section>
+  ${CITY_ORDER.concat("any").map(c => {
+    const ss = STAMPS.filter(s => s.city === c); if (!ss.length) return "";
+    return `<div class="stack" style="gap:8px"><span class="eyebrow">${c === "any" ? "Anywhere" : CITIES[c].name}</span><div class="stamps">${ss.map(s => {
+      const g = Store.get("stamps", s.id);
+      return `<button type="button" class="stamp ${g ? "got" : ""}" data-stamp="${s.id}" aria-pressed="${!!g}"><span class="seal" aria-hidden="true">${s.g}</span><span class="lbl">${esc(s.label)}</span><span class="by">${g ? esc(g.by || "") + (g.date ? " · " + fmtDate(g.date, { day: "numeric", month: "short" }) : "") : ""}</span></button>`;
+    }).join("")}</div></div>`;
+  }).join("")}
+  ${shareNote()}`;
+}
+
+let expForm = ls.get("expForm", { cur: "KRW", split: "half" });
+let convAmt = ls.get("convAmt", { amt: 10000, cur: "KRW" });
+function viewMoney() {
+  const exps = Object.entries(Store.all("expenses")).map(([id, e]) => ({ id, ...e })).sort((a, b) => (b.ts || 0) - (a.ts || 0));
+  let net = 0; const spent = { Keren: 0, Gabush: 0 };
+  exps.forEach(e => {
+    const v = toILS(Number(e.amount) || 0, e.cur); const other = PEOPLE.find(p => p !== e.paidBy);
+    if (e.split === "half") { net += (e.paidBy === "Keren" ? 1 : -1) * v / 2; spent[e.paidBy] += v / 2; spent[other] += v / 2; }
+    else if (e.split === "other") { net += (e.paidBy === "Keren" ? 1 : -1) * v; spent[other] += v; }
+    else spent[e.paidBy] += v;
+  });
+  const owe = Math.abs(net) < 1 ? `<span>All square</span>` : net > 0 ? `Gabush owes Keren <span style="color:var(--sakura)" class="tnum">${fmtMoney(net, "ILS")}</span>` : `Keren owes Gabush <span style="color:var(--sakura)" class="tnum">${fmtMoney(-net, "ILS")}</span>`;
+  const r = rates();
+  const ci = toILS(Number(convAmt.amt) || 0, convAmt.cur);
+  const targets = ["ILS", "KRW", "JPY", "USD"].filter(x => x !== convAmt.cur);
+  return `<section class="hero"><span class="eyebrow">Shared wallet</span><div class="balance">${owe}</div>
+    <p class="muted small tnum">Each person's share so far: Keren ${fmtMoney(spent.Keren, "ILS")}, Gabush ${fmtMoney(spent.Gabush, "ILS")}</p></section>
+
+  <div class="card stack" style="gap:10px"><h3>Quick convert</h3>
+    <div class="form-grid"><input type="number" inputmode="decimal" id="convAmt" value="${esc(convAmt.amt)}" aria-label="Amount to convert">
+      <select id="convCur" aria-label="Currency">${["KRW", "JPY", "ILS", "USD"].map(c => `<option ${c === convAmt.cur ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+    <div class="conv tnum" id="convOut">${targets.map(c => `<div><span class="small muted">${c}</span><b>${fmtMoney(c === "ILS" ? ci : ci * r[c], c)}</b></div>`).join("")}</div>
+  </div>
+
+  <form class="card stack" style="gap:10px" id="expAdd"><h3>Add an expense</h3>
+    <input type="text" id="expDesc" placeholder="What was it? e.g. Gwangjang dinner" aria-label="Description" maxlength="80" required>
+    <div class="form-grid"><input type="number" inputmode="decimal" id="expAmt" placeholder="Amount" aria-label="Amount" step="any" min="0" required>
+      <select id="expCur" aria-label="Currency">${["KRW", "JPY", "ILS", "USD"].map(c => `<option ${c === expForm.cur ? "selected" : ""}>${c}</option>`).join("")}</select></div>
+    <div class="seg" role="group" aria-label="How to split">${[["half", "Split 50/50"], ["mine", "Just mine"], ["other", "All theirs"]].map(([k, l]) => `<button type="button" data-split="${k}" aria-pressed="${expForm.split === k}">${l}</button>`).join("")}</div>
+    <button class="btn primary" type="submit" style="justify-content:center">${who ? `${who} paid` : "Add"}</button>
+  </form>
+
+  <div class="card"><h3 style="margin-bottom:4px">Spending log</h3>
+    ${exps.length ? exps.map(e => `<div class="exp">${avatar(e.paidBy)}<div style="min-width:0"><b style="display:block;overflow-wrap:anywhere">${esc(e.desc)}</b><span class="small muted">${e.date ? fmtDate(e.date, { day: "numeric", month: "short" }) + " · " : ""}${e.split === "half" ? "split 50/50" : e.split === "other" ? "paid for " + esc(PEOPLE.find(p => p !== e.paidBy)) : "own expense"}</span></div>
+      <div class="amt tnum">${fmtMoney(Number(e.amount), e.cur)}<br><button class="x" type="button" data-delexp="${e.id}">remove</button></div></div>`).join("") : `<p class="muted small" style="padding:8px 0">Nothing yet. Your first shared bill will show up here, along with who owes whom.</p>`}
+  </div>
+
+  <details class="card"><summary><b>Exchange rates</b> <span class="small muted">· per ₪1, shared by both phones</span></summary>
+    <div class="stack" style="gap:8px;margin-top:10px">
+      ${["KRW", "JPY", "USD"].map(c => `<label class="form-grid" style="align-items:center"><span>${c} per ₪1</span><input type="number" step="any" inputmode="decimal" data-rate="${c}" value="${r[c]}"></label>`).join("")}
+      <p class="small muted">Defaults are rough estimates. Update them with the real rate when you land.</p></div></details>
+  ${shareNote()}`;
+}
+
+let phraseLang = ls.get("lang", null);
+function viewPhrases() {
+  const t = todayLocal(); const d = DAYS.find(x => x.date === t);
+  const lang = phraseLang || (d && !CITIES[d.city].kr ? "ja" : "ko");
+  return `<section class="hero"><span class="eyebrow">Say it like a local</span><h1>${lang === "ko" ? "Korean" : "Japanese"} phrases</h1>
+    <p class="muted">Tap any phrase to show it full screen to the person you're talking to.</p></section>
+  <div class="seg" role="group" aria-label="Language"><button type="button" data-lang="ko" aria-pressed="${lang === "ko"}">한국어 Korean</button><button type="button" data-lang="ja" aria-pressed="${lang === "ja"}">日本語 Japanese</button></div>
+  <div class="card" style="padding-block:4px">${PHRASES[lang].map(([en, n, rom], i) => `<button class="phrase" type="button" data-show="${lang}:${i}"><span class="small muted">${esc(en)}</span><span class="native">${n}</span><span class="rom">${rom}</span><span class="show">Show</span></button>`).join("")}</div>
+  <div class="card stack" style="gap:6px"><h3>Emergency numbers</h3>
+    <p class="tnum"><b>Korea:</b> police 112 · ambulance 119 · English travel hotline 1330</p>
+    <p class="tnum"><b>Japan:</b> police 110 · ambulance 119</p>
+    <p class="small muted">Taxis with a recorded trip: Kakao T in Korea, GO or Uber in Japan.</p></div>`;
+}
+
+function showPhrase(lang, i) { const [en, n, rom] = PHRASES[lang][i]; showCard(n, rom, en); }
+function showCard(n, rom, en, latin) {
+  const s = document.createElement("div"); s.className = "showcard"; s.setAttribute("role", "dialog"); s.setAttribute("aria-label", en);
+  s.innerHTML = `<div class="native" ${latin ? 'style="font-family:var(--f-display);font-size:clamp(1.8rem,8vw,3rem)"' : ""}>${esc(n)}</div><div style="font-size:1.2rem;color:var(--sakura);font-weight:600">${esc(rom)}</div><div class="muted">${esc(en)}</div><button class="btn" type="button">Close</button>`;
+  s.onclick = () => s.remove(); document.body.append(s); s.querySelector("button").focus();
+}
+
+/* ---------------- router ---------------- */
+function render() {
+  const h = (location.hash || "#today").slice(1);
+  let tab = h, html;
+  if (h.startsWith("day-")) { const d = DAYS.find(x => x.date === h.slice(4)); tab = "plan"; html = d ? dayCard(d, { isToday: d.date === todayLocal() }) : viewPlan(); }
+  else html = ({ today: viewToday, plan: viewPlan, stamps: viewStamps, money: viewMoney, phrases: viewPhrases }[h] || viewToday)();
+  const v = $("#view");
+  const active = document.activeElement; const keep = active && active.id && v.contains(active) ? { id: active.id, val: active.value, s: active.selectionStart } : null;
+  v.innerHTML = `<div class="stack">${html}</div>`;
+  if (keep) { const el = document.getElementById(keep.id); if (el) { el.value = keep.val; el.focus(); try { el.setSelectionRange(keep.s, keep.s); } catch {} } }
+  const cur = ["today", "plan", "stamps", "money", "phrases"].includes(tab) ? tab : "today";
+  document.querySelectorAll("nav.tabs a").forEach(a => { if (a.dataset.tab === cur) a.setAttribute("aria-current", "page"); else a.removeAttribute("aria-current"); });
+}
+let lastHash = location.hash;
+addEventListener("hashchange", () => { render(); if (location.hash !== lastHash) scrollTo(0, 0); lastHash = location.hash; });
+
+/* ---------------- interactions ---------------- */
+document.addEventListener("click", e => {
+  const st = e.target.closest("[data-stamp]");
+  if (st) {
+    const id = st.dataset.stamp;
+    if (Store.get("stamps", id)) { Store.del("stamps", id); toast("Stamp removed"); }
+    else { Store.set("stamps", id, { by: who || "", date: todayLocal(), ts: Date.now() }); petals(); const n = STAMPS.filter(s => Store.get("stamps", s.id)).length; toast(n === STAMPS.length ? "Full stamp book. Legends." : "Stamped!"); }
+    render(); return;
+  }
+  const sp = e.target.closest("[data-split]"); if (sp) { expForm.split = sp.dataset.split; ls.set("expForm", expForm); render(); return; }
+  const lg = e.target.closest("[data-lang]"); if (lg) { phraseLang = lg.dataset.lang; ls.set("lang", phraseLang); render(); return; }
+  const ht = e.target.closest("[data-hotel]"); if (ht) { const h = HOTELS[ht.dataset.hotel]; showCard(h.name, h.address, ht.dataset.hotel === "hirosaki" || ht.dataset.hotel === "tokyo" ? "Please take us to this hotel. ありがとうございます" : "Please take us to this hotel. 감사합니다", true); return; }
+  const sh = e.target.closest("[data-show]"); if (sh) { const [l, i] = sh.dataset.show.split(":"); showPhrase(l, +i); return; }
+  const dx = e.target.closest("[data-delexp]");
+  if (dx) {
+    if (dx.dataset.confirm) { Store.del("expenses", dx.dataset.delexp); toast("Expense removed"); render(); }
+    else { dx.dataset.confirm = "1"; dx.textContent = "tap again to remove"; setTimeout(() => { if (dx.isConnected) { delete dx.dataset.confirm; dx.textContent = "remove"; } }, 3000); }
+  }
+});
+document.addEventListener("change", e => {
+  const p = e.target.closest("[data-prep]");
+  if (p) { const done = p.checked; Store.set("prep", p.dataset.prep, { done, by: done ? who || "" : "", ts: Date.now() }); if (done && PREP.every(x => Store.get("prep", x.id)?.done)) petals(80); render(); return; }
+  const r = e.target.closest("[data-rate]");
+  if (r) { const v = parseFloat(r.value); if (v > 0) { Store.set("settings", "rates", { ...rates(), [r.dataset.rate]: v }); toast("Rate saved"); render(); } return; }
+  if (e.target.id === "expCur") { expForm.cur = e.target.value; ls.set("expForm", expForm); }
+  if (e.target.id === "convCur") { convAmt.cur = e.target.value; ls.set("convAmt", convAmt); render(); }
+  const m = e.target.closest("[data-mom]");
+  if (m) { const text = m.value.trim().slice(0, 600); Store.set("journal", m.dataset.mom + "_" + who, { text, by: who, ts: Date.now() }); toast("Moment saved"); }
+});
+document.addEventListener("input", e => {
+  if (e.target.id === "convAmt") {
+    convAmt.amt = e.target.value; ls.set("convAmt", convAmt);
+    const ci = toILS(Number(convAmt.amt) || 0, convAmt.cur), r = rates();
+    $("#convOut").innerHTML = ["ILS", "KRW", "JPY", "USD"].filter(x => x !== convAmt.cur).map(c => `<div><span class="small muted">${c}</span><b>${fmtMoney(c === "ILS" ? ci : ci * r[c], c)}</b></div>`).join("");
+  }
+});
+document.addEventListener("submit", e => {
+  if (e.target.id !== "expAdd") return; e.preventDefault();
+  if (!who) { pickWho(); return; }
+  const desc = $("#expDesc").value.trim(), amount = parseFloat($("#expAmt").value), cur = $("#expCur").value;
+  if (!desc || !(amount > 0)) { toast("Add a description and an amount"); return; }
+  Store.set("expenses", uid(), { desc: desc.slice(0, 80), amount, cur, paidBy: who, split: expForm.split, date: todayLocal(), ts: Date.now() });
+  expForm.cur = cur; ls.set("expForm", expForm); toast("Added"); render();
+});
+document.addEventListener("keydown", e => { if (e.key === "Escape") document.querySelectorAll(".showcard").forEach(s => s.remove()); });
+
+renderWho(); render();
+if (!who) setTimeout(pickWho, 400);
+Store.init();
+setInterval(() => { if (!document.hidden && (location.hash || "#today") === "#today" && !document.activeElement?.matches("textarea,input")) render(); }, 60000);
+</script>
+
+</body>
+</html>
