@@ -8,4 +8,4 @@ A small phone web app for Keren and Gabush's trip to Korea and Japan, 13 to 29 A
 - **Money:** expense splitter and currency converter.
 - **Say it:** Korean and Japanese phrases to show locals, plus emergency numbers.
 
-It's one self-contained `index.html`, served with GitHub Pages. Data you enter is stored in each phone's browser.
+It's one self-contained `index.html`, served with GitHub Pages. Data is stored in each phone's browser and, once you tap the cloud button and share the sync link, synced between phones through a small public JSON bin (jsonblob.com, with json.extendsclass.com as a fallback). Anyone with the sync link can read and change that data, so share it only with each other.

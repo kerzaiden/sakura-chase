@@ -8,6 +8,7 @@
 <meta name="apple-mobile-web-app-title" content="Sakura Chase">
 <meta name="theme-color" content="#f3f5f8">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Crect%20width%3D%2224%22%20height%3D%2224%22%20rx%3D%225%22%20fill%3D%22%23fbe3ea%22/%3E%3Cg%20fill%3D%22%23d9466f%22%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%2872%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28144%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28216%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28288%2012%2012%29%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%222.2%22%20fill%3D%22%23fff%22/%3E%3C/svg%3E">
+<link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20viewBox%3D%220%200%2024%2024%22%3E%3Crect%20width%3D%2224%22%20height%3D%2224%22%20rx%3D%225%22%20fill%3D%22%23fbe3ea%22/%3E%3Cg%20fill%3D%22%23d9466f%22%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%2872%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28144%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28216%2012%2012%29%22/%3E%3Cellipse%20cx%3D%2212%22%20cy%3D%226%22%20rx%3D%223.2%22%20ry%3D%224.6%22%20transform%3D%22rotate%28288%2012%2012%29%22/%3E%3C/g%3E%3Ccircle%20cx%3D%2212%22%20cy%3D%2212%22%20r%3D%222.2%22%20fill%3D%22%23fff%22/%3E%3C/svg%3E">
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
 <title>Sakura Chase</title>
 </head>
@@ -63,6 +64,8 @@ button { cursor: pointer; }
 .brand svg { width: 22px; height: 22px; }
 .who { border: 1px solid var(--line); background: var(--card); border-radius: 999px; padding: 5px 12px 5px 6px; display: flex; align-items: center; gap: 7px; font-size: .85rem; font-weight: 600; }
 .avatar { width: 24px; height: 24px; border-radius: 50%; display: grid; place-items: center; color: #fff; font-size: .75rem; font-weight: 700; flex: none; }
+.sync { padding: 5px 9px; position: relative; } .sync svg { width: 20px; height: 20px; }
+.sdot { position: absolute; right: 6px; bottom: 6px; width: 8px; height: 8px; border-radius: 50%; border: 2px solid var(--card); }
 .av-Keren { background: var(--c-busan); } .av-Gabush { background: var(--sakura); }
 
 /* bottom nav */
@@ -166,7 +169,7 @@ textarea { resize: vertical; min-height: 64px; }
 
 <div class="top"><div class="wrap">
   <div class="brand"><svg viewBox="0 0 24 24" aria-hidden="true"><g fill="var(--sakura)"><ellipse cx="12" cy="6" rx="3.2" ry="4.6"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(72 12 12)"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(144 12 12)"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(216 12 12)"/><ellipse cx="12" cy="6" rx="3.2" ry="4.6" transform="rotate(288 12 12)"/></g><circle cx="12" cy="12" r="2.2" fill="var(--card)"/></svg>Sakura Chase</div>
-  <button class="who" id="whoBtn" type="button" aria-label="Change who is using this phone"></button>
+  <div class="row" style="gap:8px;flex-wrap:nowrap"><button class="who sync" id="syncBtn" type="button" hidden></button><button class="who" id="whoBtn" type="button" aria-label="Change who is using this phone"></button></div>
 </div></div>
 
 <main class="wrap" id="view" aria-live="polite"></main>
@@ -364,15 +367,150 @@ const Store = {
   },
   all(c) { return this.data[c] || {}; },
   get(c, id) { return this.all(c)[id]; },
+  tomb: ls.get("tomb", {}),
   set(c, id, v) {
+    v = { ...v, _ts: Date.now() };
     this.data[c] = { ...this.all(c), [id]: v }; ls.set("col:" + c, this.data[c]);
+    if (this.tomb[c + "/" + id]) { delete this.tomb[c + "/" + id]; ls.set("tomb", this.tomb); }
+    Sync.changed();
     if (this.db) this.db.collection(c).doc(id).set(v).catch(e => toast(e?.code === "not_granted" ? "Only people invited to edit can save" : "Saved on this phone; will sync later"));
   },
   del(c, id) {
     const m = { ...this.all(c) }; delete m[id]; this.data[c] = m; ls.set("col:" + c, m);
+    this.tomb[c + "/" + id] = Date.now(); ls.set("tomb", this.tomb); Sync.changed();
     if (this.db) this.db.collection(c).doc(id).delete().catch(() => {});
   }
 };
+/* ---------------- sync between phones outside claude.ai: a small shared JSON bin ----------------
+   A sync code is "<provider>:<id>". Both phones pull the bin, merge document by document
+   (newest _ts wins, deletions kept as tombstones) and push the merged state back when it differs. */
+const BINS = {
+  j: { // jsonblob.com
+    async create(body) {
+      const r = await fetch("https://jsonblob.com/api/jsonBlob", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) });
+      if (!r.ok) throw new Error("create " + r.status);
+      const loc = r.headers.get("Location") || r.headers.get("location") || "";
+      const id = (loc.match(/jsonBlob\/([\w-]+)/i) || [])[1] || r.headers.get("X-jsonblob-id") || r.headers.get("X-jsonblob");
+      if (!id) throw new Error("no id");
+      return id;
+    },
+    async get(id) { const r = await fetch("https://jsonblob.com/api/jsonBlob/" + id, { headers: { Accept: "application/json" }, cache: "no-store" }); if (!r.ok) throw new Error("get " + r.status); return r.json(); },
+    async put(id, body) { const r = await fetch("https://jsonblob.com/api/jsonBlob/" + id, { method: "PUT", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) }); if (!r.ok) throw new Error("put " + r.status); }
+  },
+  e: { // json.extendsclass.com
+    async create(body) {
+      const r = await fetch("https://json.extendsclass.com/bin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
+      if (!r.ok) throw new Error("create " + r.status);
+      const j = await r.json(); if (!j.id) throw new Error("no id"); return j.id;
+    },
+    async get(id) { const r = await fetch("https://json.extendsclass.com/bin/" + id, { cache: "no-store" }); if (!r.ok) throw new Error("get " + r.status); return r.json(); },
+    async put(id, body) { const r = await fetch("https://json.extendsclass.com/bin/" + id, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); if (!r.ok) throw new Error("put " + r.status); }
+  }
+};
+const Sync = {
+  code: ls.get("sync", null), state: "off", last: ls.get("syncLast", 0), busy: false, again: false, timer: null,
+  available() { return !Store.db && !window.claude; },
+  parse(code) { const m = String(code || "").trim().match(/(?:sync=)?([je]):([\w-]{6,})/); return m ? { p: m[1], id: m[2], code: m[1] + ":" + m[2] } : null; },
+  link() { return location.origin + location.pathname + "?sync=" + encodeURIComponent(this.code); },
+  snapshot() { return { app: "sakura-chase", v: 1, cols: Store.data, tomb: Store.tomb }; },
+  merge(remote) {
+    const cols = {}, tomb = { ...(remote?.tomb || {}) };
+    for (const [k, t] of Object.entries(Store.tomb)) tomb[k] = Math.max(tomb[k] || 0, t);
+    for (const c of COLS) {
+      const a = Store.data[c] || {}, b = remote?.cols?.[c] || {}, m = {};
+      for (const id of new Set([...Object.keys(a), ...Object.keys(b)])) {
+        const x = a[id], y = b[id]; const d = !x ? y : !y ? x : ((y._ts || 0) > (x._ts || 0) ? y : x);
+        if (d && !((tomb[c + "/" + id] || 0) >= (d._ts || 0))) m[id] = d;
+      }
+      cols[c] = m;
+    }
+    return { cols, tomb };
+  },
+  async run() {
+    if (!this.available() || !this.code) return;
+    if (this.busy) { this.again = true; return; }
+    const s = this.parse(this.code); if (!s) return;
+    this.busy = true; this.setState("syncing");
+    try {
+      const remote = await BINS[s.p].get(s.id);
+      const before = JSON.stringify(Store.data);
+      const { cols, tomb } = this.merge(remote);
+      Store.data = cols; Store.tomb = tomb;
+      COLS.forEach(c => ls.set("col:" + c, cols[c])); ls.set("tomb", tomb);
+      const merged = { app: "sakura-chase", v: 1, cols, tomb };
+      if (JSON.stringify({ cols: remote?.cols || {}, tomb: remote?.tomb || {} }) !== JSON.stringify({ cols, tomb })) await BINS[s.p].put(s.id, merged);
+      this.last = Date.now(); ls.set("syncLast", this.last); this.setState("ok");
+      if (JSON.stringify(cols) !== before) render();
+    } catch (e) { this.setState("error"); }
+    this.busy = false;
+    if (this.again) { this.again = false; this.run(); }
+  },
+  changed() { if (!this.code || !this.available()) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1200); },
+  async start() {
+    this.setState("syncing");
+    for (const p of ["j", "e"]) {
+      try { const id = await BINS[p].create(this.snapshot()); this.code = p + ":" + id; ls.set("sync", this.code); await this.run(); return true; } catch {}
+    }
+    this.setState("error"); return false;
+  },
+  join(code) { const s = this.parse(code); if (!s) return false; this.code = s.code; ls.set("sync", this.code); this.run(); return true; },
+  stop() { this.code = null; ls.set("sync", null); this.setState("off"); },
+  setState(st) { this.state = st; renderSyncBtn(); const o = document.getElementById("syncStatus"); if (o) o.textContent = syncStatusText(); },
+  init() {
+    if (!this.available()) return;
+    const q = new URLSearchParams(location.search).get("sync");
+    if (q) { const had = this.code; if (this.join(q) && had !== this.code) setTimeout(() => toast("Synced with your travel partner's phone"), 600); history.replaceState(null, "", location.pathname + location.hash); }
+    renderSyncBtn();
+    if (this.code) this.run();
+    setInterval(() => { if (!document.hidden) this.run(); }, 20000);
+    document.addEventListener("visibilitychange", () => { if (!document.hidden) this.run(); });
+    addEventListener("online", () => this.run());
+  }
+};
+function syncStatusText() {
+  if (!Sync.code) return "Not syncing yet.";
+  if (Sync.state === "syncing") return "Syncing…";
+  if (Sync.state === "error") return "Couldn't reach the sync service. Changes are safe on this phone and will sync when you're back online.";
+  return Sync.last ? "Last synced at " + new Date(Sync.last).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + "." : "Connected.";
+}
+function renderSyncBtn() {
+  const b = document.getElementById("syncBtn"); if (!b) return;
+  b.hidden = !Sync.available();
+  const col = !Sync.code ? "var(--muted)" : Sync.state === "error" ? "var(--seal)" : "var(--celadon)";
+  b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18z"/></svg><span class="sdot" style="background:${col}"></span>`;
+  b.setAttribute("aria-label", Sync.code ? "Sync settings, " + (Sync.state === "error" ? "offline" : "on") : "Set up sync between phones");
+}
+function openSync() {
+  const s = document.createElement("div"); s.className = "sheet";
+  const draw = () => {
+    s.innerHTML = `<div class="card stack" role="dialog" aria-modal="true" aria-label="Sync between phones">
+      <h2>Sync between your phones</h2>
+      ${Sync.code ? `<p class="muted small">Stamps, expenses, moments and the checklist sync between every phone that opened this link.</p>
+        <input type="text" id="syncLink" readonly value="${esc(Sync.link())}" aria-label="Sync link">
+        <div class="row"><button class="btn primary" type="button" data-sync="copy">Copy link for ${who === "Gabush" ? "Keren" : "Gabush"}</button><button class="btn" type="button" data-sync="now">Sync now</button></div>
+        <p class="small muted" id="syncStatus">${esc(syncStatusText())}</p>
+        <button class="x" type="button" data-sync="stop" style="align-self:flex-start">Stop syncing on this phone</button>`
+      : `<p class="muted small">One of you taps <b>Start syncing</b> and sends the link to the other. Opening that link on the second phone joins it.</p>
+        <button class="btn primary" type="button" data-sync="start" style="justify-content:center">Start syncing</button>
+        <p class="small muted" id="syncStatus"></p>
+        <label class="small muted" for="syncJoin">Or paste a sync link you received</label>
+        <div class="form-grid"><input type="text" id="syncJoin" placeholder="…?sync=j:…" autocomplete="off"><button class="btn" type="button" data-sync="join">Join</button></div>`}
+      <button class="btn" type="button" data-sync="close" style="justify-content:center">Done</button></div>`;
+  };
+  draw();
+  s.addEventListener("click", async e => {
+    if (e.target === s) { s.remove(); return; }
+    const a = e.target.closest("[data-sync]")?.dataset.sync; if (!a) return;
+    if (a === "close") s.remove();
+    if (a === "start") { e.target.disabled = true; e.target.textContent = "Starting…"; const ok = await Sync.start(); draw(); if (!ok) { const o = s.querySelector("#syncStatus"); if (o) o.textContent = "Couldn't reach the sync service. Check your connection and try again."; } }
+    if (a === "join") { if (Sync.join(s.querySelector("#syncJoin").value)) { draw(); toast("Joined"); } else toast("That doesn't look like a sync link"); }
+    if (a === "now") Sync.run();
+    if (a === "stop") { Sync.stop(); draw(); }
+    if (a === "copy") { const v = Sync.link(); try { await navigator.clipboard.writeText(v); toast("Link copied"); } catch { const i = s.querySelector("#syncLink"); i.focus(); i.select(); toast("Select and copy the link"); } }
+  });
+  document.body.append(s);
+}
+
 const rates = () => ({ ...DEFAULT_RATES, ...(Store.get("settings", "rates") || {}) });
 const toILS = (amt, cur) => cur === "ILS" ? amt : amt / rates()[cur];
 
@@ -390,6 +528,7 @@ function pickWho() {
   document.body.append(s);
 }
 $("#whoBtn").onclick = pickWho;
+$("#syncBtn").onclick = () => openSync();
 
 /* ---------------- petals ---------------- */
 function petals(n = 46) {
@@ -509,7 +648,8 @@ function viewToday() {
 }
 
 function shareNote() {
-  return Store.shared ? "" : `<p class="small muted">Ticks, stamps and expenses are saved on this phone only right now. Each phone keeps its own copy.</p>`;
+  if (Sync.available()) return Sync.code ? "" : `<p class="small muted">Ticks, stamps and expenses stay on this phone until you <button type="button" class="x" style="color:var(--sakura);font-weight:600;font-size:inherit" onclick="openSync()">set up sync</button> with each other.</p>`;
+  return Store.shared ? "" : `<p class="small muted">Ticks, stamps and expenses are saved on this phone only right now. Open the app from the shared link while signed in to claude.ai to sync with each other.</p>`;
 }
 
 function viewPlan() {
@@ -673,6 +813,7 @@ document.addEventListener("keydown", e => { if (e.key === "Escape") document.que
 renderWho(); render();
 if (!who) setTimeout(pickWho, 400);
 Store.init();
+Sync.init();
 setInterval(() => { if (!document.hidden && (location.hash || "#today") === "#today" && !document.activeElement?.matches("textarea,input")) render(); }, 60000);
 </script>
 
