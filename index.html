@@ -479,7 +479,7 @@ const Sync = {
       const me = new URLSearchParams(location.search).get("me");
       if (PEOPLE.includes(me)) { who = me; ls.set("who", who); document.querySelector(".sheet")?.remove(); }
       const had = this.code; if (this.join(q) && had !== this.code) setTimeout(() => toast(`Welcome${who ? ", " + who : ""}! You're connected.`), 600);
-      history.replaceState(null, "", location.pathname + location.hash); render();
+      render(); // the sync link stays in the address bar so "Add to Home Screen" keeps it (iPhone home-screen apps have their own storage)
     }
     renderWho();
     if (this.code) this.run();
