@@ -381,38 +381,50 @@ const Store = {
     if (this.db) this.db.collection(c).doc(id).delete().catch(() => {});
   }
 };
-/* ---------------- sync between phones outside claude.ai: a small shared JSON bin ----------------
-   A sync code is "<provider>:<id>". Both phones pull the bin, merge document by document
-   (newest _ts wins, deletions kept as tombstones) and push the merged state back when it differs. */
-const BINS = {
-  j: { // jsonblob.com
-    async create(body) {
-      const r = await fetch("https://jsonblob.com/api/jsonBlob", { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) });
-      if (!r.ok) throw new Error("create " + r.status);
-      const loc = r.headers.get("Location") || r.headers.get("location") || "";
-      const id = (loc.match(/jsonBlob\/([\w-]+)/i) || [])[1] || r.headers.get("X-jsonblob-id") || r.headers.get("X-jsonblob");
-      if (!id) throw new Error("no id");
-      return id;
-    },
-    async get(id) { const r = await fetch("https://jsonblob.com/api/jsonBlob/" + id, { headers: { Accept: "application/json" }, cache: "no-store" }); if (!r.ok) throw new Error("get " + r.status); return r.json(); },
-    async put(id, body) { const r = await fetch("https://jsonblob.com/api/jsonBlob/" + id, { method: "PUT", headers: { "Content-Type": "application/json", Accept: "application/json" }, body: JSON.stringify(body) }); if (!r.ok) throw new Error("put " + r.status); }
+/* ---------------- sync between phones outside claude.ai ----------------
+   Both phones share one encrypted file on the "sync-data" branch of the app's own GitHub repo.
+   The sync link carries a GitHub access key (limited to this repo) and an encryption key, so the
+   file in the public repo is unreadable without the link. Each phone pulls the file, merges
+   document by document (newest _ts wins, deletions kept as tombstones) and pushes back when it differs. */
+const GH = { owner: "kerzaiden", repo: "sakura-chase", branch: "sync-data" };
+const b64u = { enc: buf => btoa(String.fromCharCode(...new Uint8Array(buf))).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, ""),
+               dec: s => Uint8Array.from(atob(s.replace(/-/g, "+").replace(/_/g, "/") + "===".slice((s.length + 3) % 4)), c => c.charCodeAt(0)) };
+const Crypt = {
+  async key(k) { return crypto.subtle.importKey("raw", b64u.dec(k), "AES-GCM", false, ["encrypt", "decrypt"]); },
+  async seal(k, obj) { const iv = crypto.getRandomValues(new Uint8Array(12)); const ct = await crypto.subtle.encrypt({ name: "AES-GCM", iv }, await this.key(k), new TextEncoder().encode(JSON.stringify(obj))); return { v: 1, iv: b64u.enc(iv), ct: b64u.enc(ct) }; },
+  async open(k, box) { const pt = await crypto.subtle.decrypt({ name: "AES-GCM", iv: b64u.dec(box.iv) }, await this.key(k), b64u.dec(box.ct)); return JSON.parse(new TextDecoder().decode(pt)); }
+};
+class SyncError extends Error { constructor(kind, msg) { super(msg || kind); this.kind = kind; } }
+const Remote = {
+  url: f => `https://api.github.com/repos/${GH.owner}/${GH.repo}/contents/trips/${f}.json`,
+  headers: t => ({ Authorization: "Bearer " + t, Accept: "application/vnd.github+json", "X-GitHub-Api-Version": "2022-11-28" }),
+  async get(s) {
+    let r; try { r = await fetch(this.url(s.f) + "?ref=" + GH.branch + "&_=" + Date.now(), { headers: this.headers(s.t), cache: "no-store" }); } catch { throw new SyncError("offline"); }
+    if (r.status === 404) return { data: null, sha: null };
+    if (r.status === 401 || r.status === 403) throw new SyncError("auth");
+    if (!r.ok) throw new SyncError("server", "get " + r.status);
+    const j = await r.json();
+    const box = JSON.parse(atob(String(j.content || "").replace(/\s/g, "")));
+    let data; try { data = await Crypt.open(s.k, box); } catch { throw new SyncError("key"); }
+    return { data, sha: j.sha };
   },
-  e: { // json.extendsclass.com
-    async create(body) {
-      const r = await fetch("https://json.extendsclass.com/bin", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      if (!r.ok) throw new Error("create " + r.status);
-      const j = await r.json(); if (!j.id) throw new Error("no id"); return j.id;
-    },
-    async get(id) { const r = await fetch("https://json.extendsclass.com/bin/" + id, { cache: "no-store" }); if (!r.ok) throw new Error("get " + r.status); return r.json(); },
-    async put(id, body) { const r = await fetch("https://json.extendsclass.com/bin/" + id, { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); if (!r.ok) throw new Error("put " + r.status); }
+  async put(s, data, sha) {
+    const box = await Crypt.seal(s.k, data);
+    let r; try { r = await fetch(this.url(s.f), { method: "PUT", headers: { ...this.headers(s.t), "Content-Type": "application/json" }, body: JSON.stringify({ message: "Sync trip data", branch: GH.branch, content: btoa(JSON.stringify(box)), ...(sha ? { sha } : {}) }) }); } catch { throw new SyncError("offline"); }
+    if (r.status === 409 || r.status === 422) throw new SyncError("conflict");
+    if (r.status === 401 || r.status === 403 || r.status === 404) throw new SyncError("auth");
+    if (!r.ok) throw new SyncError("server", "put " + r.status);
   }
 };
 const Sync = {
-  code: ls.get("sync", null), state: "off", last: ls.get("syncLast", 0), busy: false, again: false, timer: null,
+  code: ls.get("sync2", null), state: "off", err: "", last: ls.get("syncLast", 0), busy: false, again: false, timer: null,
   available() { return !Store.db && !window.claude; },
-  parse(code) { const m = String(code || "").trim().match(/(?:sync=)?([je]):([\w-]{6,})/); return m ? { p: m[1], id: m[2], code: m[1] + ":" + m[2] } : null; },
-  link() { return location.origin + location.pathname + "?sync=" + encodeURIComponent(this.code); },
-  snapshot() { return { app: "sakura-chase", v: 1, cols: Store.data, tomb: Store.tomb }; },
+  parse(code) {
+    const m = String(code || "").trim().match(/(?:sync=)?g[~.]([A-Za-z0-9_]{20,})[~.]([A-Za-z0-9_-]{40,})[~.]([A-Za-z0-9_-]{8,})/);
+    if (!m) { try { return this.parse(decodeURIComponent(String(code || "").split("sync=")[1] || "")); } catch { return null; } }
+    return { t: m[1], k: m[2], f: m[3], code: "g~" + m[1] + "~" + m[2] + "~" + m[3] };
+  },
+  link() { return location.origin + location.pathname + "?sync=" + this.code; },
   merge(remote) {
     const cols = {}, tomb = { ...(remote?.tomb || {}) };
     for (const [k, t] of Object.entries(Store.tomb)) tomb[k] = Math.max(tomb[k] || 0, t);
@@ -427,39 +439,48 @@ const Sync = {
     return { cols, tomb };
   },
   async run() {
-    if (!this.available() || !this.code) return;
-    if (this.busy) { this.again = true; return; }
-    const s = this.parse(this.code); if (!s) return;
+    if (!this.available() || !this.code) return false;
+    if (this.busy) { this.again = true; return false; }
+    const s = this.parse(this.code); if (!s) return false;
     this.busy = true; this.setState("syncing");
+    let ok = false;
     try {
-      const remote = await BINS[s.p].get(s.id);
-      const before = JSON.stringify(Store.data);
-      const { cols, tomb } = this.merge(remote);
-      Store.data = cols; Store.tomb = tomb;
-      COLS.forEach(c => ls.set("col:" + c, cols[c])); ls.set("tomb", tomb);
-      const merged = { app: "sakura-chase", v: 1, cols, tomb };
-      if (JSON.stringify({ cols: remote?.cols || {}, tomb: remote?.tomb || {} }) !== JSON.stringify({ cols, tomb })) await BINS[s.p].put(s.id, merged);
-      this.last = Date.now(); ls.set("syncLast", this.last); this.setState("ok");
-      if (JSON.stringify(cols) !== before) render();
-    } catch (e) { this.setState("error"); }
+      for (let attempt = 0; attempt < 3 && !ok; attempt++) {
+        const { data: remote, sha } = await Remote.get(s);
+        const before = JSON.stringify(Store.data);
+        const { cols, tomb } = this.merge(remote);
+        Store.data = cols; Store.tomb = tomb;
+        COLS.forEach(c => ls.set("col:" + c, cols[c])); ls.set("tomb", tomb);
+        if (JSON.stringify(cols) !== before) render();
+        if (!remote || JSON.stringify({ cols: remote.cols || {}, tomb: remote.tomb || {} }) !== JSON.stringify({ cols, tomb })) {
+          try { await Remote.put(s, { app: "sakura-chase", v: 2, cols, tomb }, sha); ok = true; }
+          catch (e) { if (e.kind !== "conflict") throw e; }
+        } else ok = true;
+      }
+      if (ok) { this.last = Date.now(); ls.set("syncLast", this.last); this.err = ""; this.setState("ok"); }
+      else this.again = true;
+    } catch (e) { this.err = e.kind || "server"; this.setState("error"); }
     this.busy = false;
-    if (this.again) { this.again = false; this.run(); }
+    if (this.again) { this.again = false; setTimeout(() => this.run(), 800); }
+    return ok;
   },
   changed() { if (!this.code || !this.available()) return; clearTimeout(this.timer); this.timer = setTimeout(() => this.run(), 1200); },
-  async start() {
-    this.setState("syncing");
-    for (const p of ["j", "e"]) {
-      try { const id = await BINS[p].create(this.snapshot()); this.code = p + ":" + id; ls.set("sync", this.code); await this.run(); return true; } catch {}
-    }
-    this.setState("error"); return false;
+  async start(token) {
+    token = String(token || "").trim();
+    if (!/^[A-Za-z0-9_]{20,}$/.test(token)) { this.err = "badtoken"; this.setState("error"); return false; }
+    const k = b64u.enc(crypto.getRandomValues(new Uint8Array(32))), f = b64u.enc(crypto.getRandomValues(new Uint8Array(9)));
+    const prev = this.code; this.code = "g~" + token + "~" + k + "~" + f;
+    const ok = await this.run();
+    if (ok) ls.set("sync2", this.code); else this.code = prev;
+    return ok;
   },
-  join(code) { const s = this.parse(code); if (!s) return false; this.code = s.code; ls.set("sync", this.code); this.run(); return true; },
-  stop() { this.code = null; ls.set("sync", null); this.setState("off"); },
+  join(code) { const s = this.parse(code); if (!s) return false; this.code = s.code; ls.set("sync2", this.code); this.run(); return true; },
+  stop() { this.code = null; ls.set("sync2", null); this.err = ""; this.setState("off"); },
   setState(st) { this.state = st; renderSyncBtn(); const o = document.getElementById("syncStatus"); if (o) o.textContent = syncStatusText(); },
   init() {
     if (!this.available()) return;
-    const q = new URLSearchParams(location.search).get("sync");
-    if (q) { const had = this.code; if (this.join(q) && had !== this.code) setTimeout(() => toast("Synced with your travel partner's phone"), 600); history.replaceState(null, "", location.pathname + location.hash); }
+    const q = location.search.includes("sync=") ? location.search : "";
+    if (q) { const had = this.code; if (this.join(q) && had !== this.code) setTimeout(() => toast("Joined. This phone now syncs."), 600); history.replaceState(null, "", location.pathname + location.hash); }
     renderSyncBtn();
     if (this.code) this.run();
     setInterval(() => { if (!document.hidden) this.run(); }, 20000);
@@ -468,9 +489,14 @@ const Sync = {
   }
 };
 function syncStatusText() {
-  if (!Sync.code) return "Not syncing yet.";
   if (Sync.state === "syncing") return "Syncing…";
-  if (Sync.state === "error") return "Couldn't reach the sync service. Changes are safe on this phone and will sync when you're back online.";
+  if (Sync.state === "error") return ({
+    badtoken: "That doesn't look like a GitHub access key. It starts with github_pat_.",
+    auth: "GitHub refused the access key. Check it has Contents: Read and write on sakura-chase and hasn't expired.",
+    key: "This sync link doesn't match the shared data. Ask for a fresh link.",
+    offline: "No connection right now. Changes are safe on this phone and will sync when you're back online."
+  })[Sync.err] || "GitHub didn't answer. Changes are safe on this phone; it will try again shortly.";
+  if (!Sync.code) return "";
   return Sync.last ? "Last synced at " + new Date(Sync.last).toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + "." : "Connected.";
 }
 function renderSyncBtn() {
@@ -478,23 +504,31 @@ function renderSyncBtn() {
   b.hidden = !Sync.available();
   const col = !Sync.code ? "var(--muted)" : Sync.state === "error" ? "var(--seal)" : "var(--celadon)";
   b.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 18h10a4 4 0 0 0 .6-7.96A6 6 0 0 0 6.1 9.2 4.5 4.5 0 0 0 7 18z"/></svg><span class="sdot" style="background:${col}"></span>`;
-  b.setAttribute("aria-label", Sync.code ? "Sync settings, " + (Sync.state === "error" ? "offline" : "on") : "Set up sync between phones");
+  b.setAttribute("aria-label", Sync.code ? "Sync settings, " + (Sync.state === "error" ? "having trouble" : "on") : "Set up sync between phones");
 }
 function openSync() {
   const s = document.createElement("div"); s.className = "sheet";
+  const other = who === "Gabush" ? "Keren" : "Gabush";
   const draw = () => {
     s.innerHTML = `<div class="card stack" role="dialog" aria-modal="true" aria-label="Sync between phones">
       <h2>Sync between your phones</h2>
-      ${Sync.code ? `<p class="muted small">Stamps, expenses, moments and the checklist sync between every phone that opened this link.</p>
+      ${Sync.code ? `<p class="muted small">Stamps, expenses, moments and the checklist sync between every phone that opened this link. Keep it between the two of you.</p>
         <input type="text" id="syncLink" readonly value="${esc(Sync.link())}" aria-label="Sync link">
-        <div class="row"><button class="btn primary" type="button" data-sync="copy">Copy link for ${who === "Gabush" ? "Keren" : "Gabush"}</button><button class="btn" type="button" data-sync="now">Sync now</button></div>
+        <div class="row"><button class="btn primary" type="button" data-sync="copy">Copy link for ${other}</button><button class="btn" type="button" data-sync="now">Sync now</button></div>
         <p class="small muted" id="syncStatus">${esc(syncStatusText())}</p>
         <button class="x" type="button" data-sync="stop" style="align-self:flex-start">Stop syncing on this phone</button>`
-      : `<p class="muted small">One of you taps <b>Start syncing</b> and sends the link to the other. Opening that link on the second phone joins it.</p>
-        <button class="btn primary" type="button" data-sync="start" style="justify-content:center">Start syncing</button>
-        <p class="small muted" id="syncStatus"></p>
-        <label class="small muted" for="syncJoin">Or paste a sync link you received</label>
-        <div class="form-grid"><input type="text" id="syncJoin" placeholder="…?sync=j:…" autocomplete="off"><button class="btn" type="button" data-sync="join">Join</button></div>`}
+      : `<p class="muted small"><b>Got a link from ${other}?</b> Just open it on this phone, or paste it here.</p>
+        <div class="form-grid"><input type="text" id="syncJoin" placeholder="Paste the sync link" autocomplete="off"><button class="btn" type="button" data-sync="join">Join</button></div>
+        <details><summary class="small"><b>Setting it up for the first time?</b></summary>
+          <ol class="small" style="padding-left:18px;margin:8px 0;display:grid;gap:4px">
+            <li>Open <a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub's new access key page ↗</a>.</li>
+            <li>Name it "Sakura Chase", set expiration to after the trip (for example 1 June 2027).</li>
+            <li>Under Repository access choose <b>Only select repositories</b> and pick <b>sakura-chase</b>.</li>
+            <li>Under Permissions, set <b>Contents</b> to <b>Read and write</b>. Generate it and copy it.</li>
+          </ol>
+          <div class="stack" style="gap:8px"><input type="text" id="syncToken" placeholder="github_pat_…" autocomplete="off" aria-label="GitHub access key">
+          <button class="btn primary" type="button" data-sync="start" style="justify-content:center">Start syncing</button></div></details>
+        <p class="small muted" id="syncStatus">${esc(Sync.state === "error" ? syncStatusText() : "")}</p>`}
       <button class="btn" type="button" data-sync="close" style="justify-content:center">Done</button></div>`;
   };
   draw();
@@ -502,7 +536,7 @@ function openSync() {
     if (e.target === s) { s.remove(); return; }
     const a = e.target.closest("[data-sync]")?.dataset.sync; if (!a) return;
     if (a === "close") s.remove();
-    if (a === "start") { e.target.disabled = true; e.target.textContent = "Starting…"; const ok = await Sync.start(); draw(); if (!ok) { const o = s.querySelector("#syncStatus"); if (o) o.textContent = "Couldn't reach the sync service. Check your connection and try again."; } }
+    if (a === "start") { const tok = s.querySelector("#syncToken").value; e.target.disabled = true; e.target.textContent = "Connecting…"; const ok = await Sync.start(tok); draw(); if (!ok) { const d = s.querySelector("details"); if (d) d.open = true; const i = s.querySelector("#syncToken"); if (i) i.value = tok; } else toast("Syncing is on"); }
     if (a === "join") { if (Sync.join(s.querySelector("#syncJoin").value)) { draw(); toast("Joined"); } else toast("That doesn't look like a sync link"); }
     if (a === "now") Sync.run();
     if (a === "stop") { Sync.stop(); draw(); }
